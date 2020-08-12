@@ -7,7 +7,7 @@ class SampleTest {
 
     @Test
     public void testSomething() {
-        String greeting = "Hello";
+        String greeting = "Hello World";
         assertEquals("Hello World", greeting);
     }
 

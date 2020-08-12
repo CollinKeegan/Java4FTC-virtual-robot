@@ -1,7 +1,15 @@
 package net.aspenk12.java4ftc;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+
 public class GridLogger {
+
     private TestWriter writer;
+    private HashMap<String, String> rowData = new HashMap<>();
+    private ArrayList<String> columnHeaders;
+    private boolean firstLine = true;
 
     public GridLogger(TestWriter writer) {
         this.writer = writer;
@@ -12,6 +20,9 @@ public class GridLogger {
      * @param columns
      */
     public void setColumnHeaders(String[] columns) {
+
+        columnHeaders = (ArrayList<String>) Arrays.asList(columns);
+
     }
 
     /**
@@ -21,6 +32,9 @@ public class GridLogger {
      * @param value
      */
     public void add(String column, double value) {
+
+        rowData.put("column", toString().valueOf(value));
+
     }
 
     /**
@@ -30,7 +44,41 @@ public class GridLogger {
      * and calls to add() will add values to the next line of data.
      */
     public void writeRow() {
-        writer.writeLine("something");
+
+        if(firstLine == true){
+
+            for(int i = 0; i < columnHeaders.size(); i++){
+
+                StringBuilder builder = new StringBuilder();
+                builder.append(columnHeaders.get(i));
+
+                if(i != columnHeaders.size() - 1){
+
+                    builder.append(",");
+
+                }
+
+                writer.writeLine(builder.toString());
+
+            }
+
+        }
+
+        for(int i = 0; i < columnHeaders.size(); i++){
+
+            StringBuilder builder = new StringBuilder();
+            builder.append(rowData.get(columnHeaders.get(i)));
+
+            if(i != columnHeaders.size() - 1){
+
+                builder.append(",");
+
+            }
+
+            writer.writeLine(builder.toString());
+
+        }
+
     }
 
     public void stop() {
