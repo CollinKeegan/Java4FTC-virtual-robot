@@ -6,9 +6,14 @@ import java.util.HashMap;
 
 public class GridLogger {
 
-    private TestWriter writer;
+    private LogWriter writer;
+
+    public GridLogger(LogWriter writer) {
+        this.writer = writer;
+    }
+
     private HashMap<String, String> rowData = new HashMap<>();
-    private ArrayList<String> columnHeaders;
+    private ArrayList<String> columnHeaders = new ArrayList<>();
     private boolean firstLine = true;
 
     public GridLogger(TestWriter writer) {
@@ -21,7 +26,7 @@ public class GridLogger {
      */
     public void setColumnHeaders(String[] columns) {
 
-        columnHeaders = (ArrayList<String>) Arrays.asList(columns);
+        columnHeaders = new ArrayList<>(Arrays.asList(columns));
 
     }
 
@@ -33,7 +38,13 @@ public class GridLogger {
      */
     public void add(String column, double value) {
 
-        rowData.put("column", toString().valueOf(value));
+        rowData.put(column, toString().valueOf(value));
+
+    }
+
+    public void add(String column) {
+
+        rowData.put(column, "");
 
     }
 
@@ -47,9 +58,10 @@ public class GridLogger {
 
         if(firstLine == true){
 
+            StringBuilder builder = new StringBuilder();
+
             for(int i = 0; i < columnHeaders.size(); i++){
 
-                StringBuilder builder = new StringBuilder();
                 builder.append(columnHeaders.get(i));
 
                 if(i != columnHeaders.size() - 1){
@@ -58,30 +70,41 @@ public class GridLogger {
 
                 }
 
-                writer.writeLine(builder.toString());
-
-            }
-
-        }
-
-        for(int i = 0; i < columnHeaders.size(); i++){
-
-            StringBuilder builder = new StringBuilder();
-            builder.append(rowData.get(columnHeaders.get(i)));
-
-            if(i != columnHeaders.size() - 1){
-
-                builder.append(",");
-
             }
 
             writer.writeLine(builder.toString());
+            firstLine = false;
 
         }
+
+        StringBuilder builder = new StringBuilder();
+
+        for(int i = 0; i < columnHeaders.size(); i++){
+
+            if(rowData.get(columnHeaders.get(i)) != null){
+
+                builder.append(rowData.get(columnHeaders.get(i)));
+
+                if(i != columnHeaders.size() - 1){
+
+                    builder.append(",");
+
+                }
+
+            }
+
+        }
+
+        writer.writeLine(builder.toString());
+
+        rowData.clear();
 
     }
 
     public void stop() {
+
+        writer.stop();
+
     }
 
 }
