@@ -15,7 +15,7 @@ class GridLoggerTest {
         gridLogger.setColumnHeaders(new String[]{"RobotX", "RobotY"});
         gridLogger.add("RobotX", 2.4);
         gridLogger.add("RobotY", 3.2);
-        gridLogger.writeRow();
+        gridLogger.writeRow(false);
 
         List<String> lines = writer.getLines();
         assertEquals("RobotX,RobotY", lines.get(0));
@@ -29,10 +29,10 @@ class GridLoggerTest {
         gridLogger.setColumnHeaders(new String[]{"RobotX", "RobotY"});
         gridLogger.add("RobotX", 2.4);
         gridLogger.add("RobotY", 3.2);
-        gridLogger.writeRow();
+        gridLogger.writeRow(false);
         gridLogger.add("RobotX", 4.5);
         gridLogger.add("RobotY", 1.2);
-        gridLogger.writeRow();
+        gridLogger.writeRow(false);
 
         List<String> lines = writer.getLines();
         assertEquals("RobotX,RobotY", lines.get(0));
@@ -47,7 +47,7 @@ class GridLoggerTest {
         gridLogger.setColumnHeaders(new String[]{"RobotX", "RobotY"});
         gridLogger.add("RobotX");
         gridLogger.add("RobotY", 3.2);
-        gridLogger.writeRow();
+        gridLogger.writeRow(false);
 
         List<String> lines = writer.getLines();
         assertEquals("RobotX,RobotY", lines.get(0));
@@ -61,8 +61,8 @@ class GridLoggerTest {
         gridLogger.setColumnHeaders(new String[]{"RobotX", "RobotY"});
         gridLogger.add("RobotX");
         gridLogger.add("RobotY", 3.2);
+        gridLogger.writeRow(false);
         gridLogger.add("Robot", 3.2);
-        gridLogger.writeRow();
 
         List<String> lines = writer.getLines();
         assertEquals("RobotX,RobotY", lines.get(0));
@@ -74,7 +74,7 @@ class GridLoggerTest {
         TestWriter writer = new TestWriter();
         GridLogger gridLogger = new GridLogger(writer);
         gridLogger.setColumnHeaders(new String[]{"RobotX", "RobotY"});
-        gridLogger.writeRow();
+        gridLogger.writeRow(false);
 
         List<String> lines = writer.getLines();
         assertEquals("RobotX,RobotY", lines.get(0));
@@ -97,8 +97,58 @@ class GridLoggerTest {
         gridLogger.setColumnHeaders(new String[]{"RobotX", "RobotY"});
         gridLogger.add("RobotX", 2.4);
         gridLogger.add("RobotY", 3.2);
-        gridLogger.writeRow();
+        gridLogger.writeRow(false);
         gridLogger.stop();
+    }
+
+    @Test
+    public void lazyWriteLn() {
+        TestWriter writer = new TestWriter();
+        GridLogger gridLogger = new GridLogger(writer);
+        gridLogger.add("RobotX", 2.4);
+        gridLogger.add("RobotY", 3.2);
+        gridLogger.writeRow(false);
+
+        List<String> lines = writer.getLines();
+        assertEquals("RobotX,RobotY", lines.get(0));
+        assertEquals("2.4,3.2", lines.get(1));
+    }
+
+    @Test
+    public void lazyDuplicates() {
+        TestWriter writer = new TestWriter();
+        GridLogger gridLogger = new GridLogger(writer);
+        gridLogger.add("RobotX", 2.4);
+        gridLogger.add("RobotX", 1.2);
+        gridLogger.add("RobotY", 3.2);
+        gridLogger.writeRow(false);
+
+        List<String> lines = writer.getLines();
+        assertEquals("RobotX,RobotY", lines.get(0));
+        assertEquals("1.2,3.2", lines.get(1));
+    }
+
+    @Test
+    public void timeWrite() {
+        TestWriter writer = new TestWriter();
+        TestTimer timer = new TestTimer();
+        timer.setTime(1);
+        GridLogger gridLogger = new GridLogger(writer, timer);
+        timer.setTime(4);
+        gridLogger.writeRow(true);
+
+        List<String> lines = writer.getLines();
+        assertEquals("Time", lines.get(0));
+        assertEquals("4", lines.get(1));
+    }
+
+    @Test
+    public void systemTimeTest() {
+        TestWriter writer = new TestWriter();
+        GridLogger gridLogger = new GridLogger(writer);
+        gridLogger.writeRow(true);
+        List<String> lines = writer.getLines();
+        System.out.println(lines.get(1));
     }
 
 
