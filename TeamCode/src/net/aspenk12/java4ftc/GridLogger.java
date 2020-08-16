@@ -67,6 +67,12 @@ public class GridLogger {
 
         rowData.put(column, "");
 
+        if(firstLine == true && !columnHeaders.contains(column)){
+
+            columnHeaders.add(column);
+
+        }
+
     }
 
     /**
@@ -77,57 +83,7 @@ public class GridLogger {
      */
     public void writeRow() {
 
-        //Automatically adds Time field
-        {rowData.put("Time", toString().valueOf(timer.time() - datumTime));
-
-            if(firstLine == true && !columnHeaders.contains("Time")){
-
-                columnHeaders.add("Time");
-
-            }}
-
-        if(firstLine == true){
-
-            StringBuilder builder = new StringBuilder();
-
-            for(int i = 0; i < columnHeaders.size(); i++){
-
-                builder.append(columnHeaders.get(i));
-
-                if(i != columnHeaders.size() - 1){
-
-                    builder.append(",");
-
-                }
-
-            }
-
-            writer.writeLine(builder.toString());
-            firstLine = false;
-
-        }
-
-        StringBuilder builder = new StringBuilder();
-
-        for(int i = 0; i < columnHeaders.size(); i++){
-
-            if(rowData.get(columnHeaders.get(i)) != null){
-
-                builder.append(rowData.get(columnHeaders.get(i)));
-
-                if(i != columnHeaders.size() - 1){
-
-                    builder.append(",");
-
-                }
-
-            }
-
-        }
-
-        writer.writeLine(builder.toString());
-
-        rowData.clear();
+        writeRow(true);
 
     }
 
